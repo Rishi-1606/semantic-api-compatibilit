@@ -1,0 +1,40 @@
+# Environment / Secrets
+.env
+*.env.local
+
+# Java / Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# Node.js
+node_modules/
+gateway/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# React / Vite build output
+frontend/dist/
+frontend/.vite/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
