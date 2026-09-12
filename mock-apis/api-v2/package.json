@@ -1,0 +1,21 @@
+{
+  "name": "customer-api-v2",
+  "version": "2.0.0",
+  "description": "Mock Customer API V2 — uses updated field names: fullName, phoneNumber, emailAddress, customerId",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
