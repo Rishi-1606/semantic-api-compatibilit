@@ -2,6 +2,7 @@ package com.semanticapi.controller;
 
 import com.semanticapi.exception.ConflictException;
 import com.semanticapi.exception.ResourceNotFoundException;
+import com.semanticapi.schema.SchemaParseException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleConflict(
             ConflictException ex, HttpServletRequest request) {
         return buildError(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request.getRequestURI());
+    }
+
+    // ── 400 Schema Parse Error ─────────────────────────────────
+    @ExceptionHandler(SchemaParseException.class)
+    public ResponseEntity<Map<String, Object>> handleSchemaParse(
+            SchemaParseException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, "Schema parse error", ex.getMessage(), request.getRequestURI());
     }
 
     // ── 400 Bean Validation (@Valid) ──────────────────────────
