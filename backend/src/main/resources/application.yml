@@ -68,3 +68,78 @@ app:
   confidence:
     auto-approve-threshold: 0.90
     human-approval-threshold: 0.70
+
+# ── NLP Pipeline (Phase 5) ────────────────────────────────────
+# Generic, domain-agnostic abbreviation expansions.
+# Keys: lowercase token as it appears after tokenization.
+# Values: the full expanded form (also lowercase).
+# Add new entries here without touching Java code.
+nlp:
+  abbreviations:
+    # ── Quantity / number ──
+    # NOTE: 'no' must be quoted — YAML 1.1 treats bare 'no' as boolean false
+    "no": number
+    num: number
+    qty: quantity
+    amt: amount
+    cnt: count
+    # ── Contact / communication ──
+    mob: mobile
+    ph: phone
+    tel: telephone
+    fax: facsimile
+    ext: extension
+    # ── Address / location ──
+    addr: address
+    str: street
+    ave: avenue
+    blvd: boulevard
+    apt: apartment
+    zip: zipcode
+    # ── Entity identifiers ──
+    id: identifier
+    cust: customer
+    prod: product
+    ord: order
+    dept: department
+    org: organization
+    # ── Person / name ──
+    fn: firstname
+    ln: lastname
+    mi: middleinitial
+    dob: dateofbirth
+    # ── Finance ──
+    bal: balance
+    txn: transaction
+    acct: account
+    cur: currency
+    # ── Date / time ──
+    dt: date
+    ts: timestamp
+    yr: year
+    mo: month
+    hr: hour
+    mins: minute
+    sec: second
+    # ── Common abbreviations ──
+    desc: description
+    ref: reference
+    seq: sequence
+    idx: index
+    cfg: configuration
+    img: image
+    msg: message
+    err: error
+    req: request
+    resp: response
+    auth: authentication
+    usr: user
+    pwd: password
+    lang: language
+    loc: location
+    lat: latitude
+    lng: longitude
+    max: maximum
+    min: minimum
+    avg: average
+    std: standard

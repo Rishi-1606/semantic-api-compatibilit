@@ -2,6 +2,8 @@ package com.semanticapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import com.semanticapi.nlp.AbbreviationDictionary;
 
 /**
  * Entry point for the Semantic API Compatibility & Automatic Transformation Framework.
@@ -18,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * <p>Run locally with H2 (default) or PostgreSQL (docker profile).
  */
 @SpringBootApplication
+@EnableConfigurationProperties(AbbreviationDictionary.class)
 public class SemanticApiApplication {
 
     public static void main(String[] args) {

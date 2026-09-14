@@ -12,3 +12,17 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+
+# Minimal abbreviation set for integration tests
+nlp:
+  abbreviations:
+    mob: mobile
+    ph: phone
+    "no": number
+    num: number
+    addr: address
+    cust: customer
+    id: identifier
+    dt: date
+    qty: quantity
+    str: street
