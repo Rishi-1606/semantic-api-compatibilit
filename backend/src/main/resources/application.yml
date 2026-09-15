@@ -69,6 +69,29 @@ app:
     auto-approve-threshold: 0.90
     human-approval-threshold: 0.70
 
+# ── AI / Embedding (Phase 6) ──────────────────────────────────
+# Provider selection and model configuration.
+# Change provider/model here with no Java code changes required.
+ai:
+  embedding:
+    # Options: "ollama" | "lexical-fallback"
+    provider: ollama
+    # Ollama server base URL (default local install)
+    base-url: http://localhost:11434
+    # Embedding model (run: ollama pull nomic-embed-text)
+    model: nomic-embed-text
+    # When true: fall back to lexical-fallback if Ollama is unreachable
+    # When false: fail fast with an error
+    fallback-on-error: true
+    # HTTP timeout for embedding API calls (seconds)
+    timeout-seconds: 10
+    # Confidence thresholds (spec section 7)
+    # >= auto-approve-threshold → AUTO_APPROVED
+    auto-approve-threshold: 0.90
+    # >= review-threshold and < auto-approve → REQUIRES_REVIEW
+    review-threshold: 0.70
+    # < review-threshold → LOW_CONFIDENCE
+
 # ── NLP Pipeline (Phase 5) ────────────────────────────────────
 # Generic, domain-agnostic abbreviation expansions.
 # Keys: lowercase token as it appears after tokenization.

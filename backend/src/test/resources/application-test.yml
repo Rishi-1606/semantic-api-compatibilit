@@ -26,3 +26,11 @@ nlp:
     dt: date
     qty: quantity
     str: street
+
+# Phase 6: use lexical-fallback in tests (no Ollama required)
+ai:
+  embedding:
+    provider: lexical-fallback
+    fallback-on-error: true
+    auto-approve-threshold: 0.90
+    review-threshold: 0.70
