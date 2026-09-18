@@ -75,6 +75,28 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.BAD_REQUEST, "Invalid request", ex.getMessage(), request.getRequestURI());
     }
 
+    // ── 400 Missing Request Parameter ────────────────────────
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> handleMissingParam(
+            org.springframework.web.bind.MissingServletRequestParameterException ex,
+            HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST,
+                "Missing required request parameter",
+                "Required parameter '" + ex.getParameterName() + "' is missing",
+                request.getRequestURI());
+    }
+
+    // ── 422 Unprocessable Entity ──────────────────────────────
+    // Thrown by Phase 8 when an INVALID or REJECTED rule cannot be approved
+    // (spec § 14: "422 → Transformation cannot be safely executed").
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalState(
+            IllegalStateException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.UNPROCESSABLE_ENTITY,
+                "Transformation rule cannot be approved in its current state",
+                ex.getMessage(), request.getRequestURI());
+    }
+
     // ── 500 Generic ───────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(
