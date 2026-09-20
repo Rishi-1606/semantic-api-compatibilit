@@ -11,6 +11,7 @@ import java.time.Instant;
  * <pre>
  *   Phase 8 generates: GENERATED (valid) or INVALID (failed safety check)
  *   Phase 9 sets:      APPROVED (human or auto) or REJECTED
+ *   Phase 9 audit:     approvedAt / rejectedAt / approvalNote recorded
  *   Phase 10 reads:    APPROVED rules only
  * </pre>
  *
@@ -226,6 +227,24 @@ public class TransformationRule {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    // ── Phase 9 audit ─────────────────────────────────────────
+
+    /** Timestamp set when ruleStatus transitions to APPROVED (Phase 9). */
+    @Column(name = "approved_at")
+    private Instant approvedAt;
+
+    /** Timestamp set when ruleStatus transitions to REJECTED (Phase 9). */
+    @Column(name = "rejected_at")
+    private Instant rejectedAt;
+
+    /**
+     * Human-supplied approval or rejection note (Phase 9).
+     * Distinct from {@code rejectionReason}, which is set by Phase 8 generation failures.
+     * This field carries the human reviewer's rationale.
+     */
+    @Column(name = "approval_note", columnDefinition = "TEXT")
+    private String approvalNote;
+
     // ── Lifecycle ─────────────────────────────────────────────
 
     @PrePersist
@@ -283,4 +302,10 @@ public class TransformationRule {
     public void                setValidationErrors(String e)   { this.validationErrors = e; }
     public Instant             getCreatedAt()                  { return createdAt; }
     public Instant             getUpdatedAt()                  { return updatedAt; }
+    public Instant             getApprovedAt()                 { return approvedAt; }
+    public void                setApprovedAt(Instant t)        { this.approvedAt = t; }
+    public Instant             getRejectedAt()                 { return rejectedAt; }
+    public void                setRejectedAt(Instant t)        { this.rejectedAt = t; }
+    public String              getApprovalNote()               { return approvalNote; }
+    public void                setApprovalNote(String n)       { this.approvalNote = n; }
 }

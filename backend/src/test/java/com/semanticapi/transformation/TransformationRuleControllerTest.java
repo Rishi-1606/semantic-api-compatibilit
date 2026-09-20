@@ -5,6 +5,7 @@ import com.semanticapi.controller.TransformationRuleController;
 import com.semanticapi.dto.*;
 import com.semanticapi.exception.ResourceNotFoundException;
 import com.semanticapi.model.*;
+import com.semanticapi.service.ApprovalService;
 import com.semanticapi.service.TransformationRuleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +54,7 @@ class TransformationRuleControllerTest {
     @Autowired ObjectMapper objectMapper;
 
     @MockBean TransformationRuleService ruleService;
+    @MockBean ApprovalService           approvalService;
 
     // ── Helpers ───────────────────────────────────────────────
 
@@ -306,7 +308,7 @@ class TransformationRuleControllerTest {
         void approve_generated_returns200Approved() throws Exception {
             TransformationRule approved = ruleEntity(1L, TransformationRule.Operation.RENAME,
                     TransformationRule.RuleStatus.APPROVED);
-            when(ruleService.approveRule(eq(1L), any())).thenReturn(approved);
+            when(approvalService.approveRule(eq(1L), any())).thenReturn(approved);
 
             mockMvc.perform(post("/api/transformation-rules/1/approve")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -320,7 +322,7 @@ class TransformationRuleControllerTest {
         void approve_noBody_returns200() throws Exception {
             TransformationRule approved = ruleEntity(1L, TransformationRule.Operation.RENAME,
                     TransformationRule.RuleStatus.APPROVED);
-            when(ruleService.approveRule(eq(1L), isNull())).thenReturn(approved);
+            when(approvalService.approveRule(eq(1L), isNull())).thenReturn(approved);
 
             mockMvc.perform(post("/api/transformation-rules/1/approve"))
                     .andExpect(status().isOk());
@@ -329,7 +331,7 @@ class TransformationRuleControllerTest {
         @Test
         @DisplayName("approve INVALID rule → 422 Unprocessable Entity")
         void approve_invalidRule_returns422() throws Exception {
-            when(ruleService.approveRule(eq(3L), any()))
+            when(approvalService.approveRule(eq(3L), any()))
                     .thenThrow(new IllegalStateException("Rule 3 is INVALID and cannot be approved"));
 
             mockMvc.perform(post("/api/transformation-rules/3/approve")
@@ -341,7 +343,7 @@ class TransformationRuleControllerTest {
         @Test
         @DisplayName("approve rule not found → 404")
         void approve_notFound_returns404() throws Exception {
-            when(ruleService.approveRule(eq(404L), any()))
+            when(approvalService.approveRule(eq(404L), any()))
                     .thenThrow(new ResourceNotFoundException("TransformationRule", 404L));
 
             mockMvc.perform(post("/api/transformation-rules/404/approve"))
@@ -362,7 +364,7 @@ class TransformationRuleControllerTest {
         void reject_generated_returns200Rejected() throws Exception {
             TransformationRule rejected = ruleEntity(2L, TransformationRule.Operation.RENAME,
                     TransformationRule.RuleStatus.REJECTED);
-            when(ruleService.rejectRule(eq(2L), any())).thenReturn(rejected);
+            when(approvalService.rejectRule(eq(2L), any())).thenReturn(rejected);
 
             mockMvc.perform(post("/api/transformation-rules/2/reject")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -376,7 +378,7 @@ class TransformationRuleControllerTest {
         void reject_noBody_returns200() throws Exception {
             TransformationRule rejected = ruleEntity(2L, TransformationRule.Operation.RENAME,
                     TransformationRule.RuleStatus.REJECTED);
-            when(ruleService.rejectRule(eq(2L), isNull())).thenReturn(rejected);
+            when(approvalService.rejectRule(eq(2L), isNull())).thenReturn(rejected);
 
             mockMvc.perform(post("/api/transformation-rules/2/reject"))
                     .andExpect(status().isOk());
@@ -385,7 +387,7 @@ class TransformationRuleControllerTest {
         @Test
         @DisplayName("reject rule not found → 404")
         void reject_notFound_returns404() throws Exception {
-            when(ruleService.rejectRule(eq(404L), any()))
+            when(approvalService.rejectRule(eq(404L), any()))
                     .thenThrow(new ResourceNotFoundException("TransformationRule", 404L));
 
             mockMvc.perform(post("/api/transformation-rules/404/reject"))

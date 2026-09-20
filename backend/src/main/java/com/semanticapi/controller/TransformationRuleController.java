@@ -12,6 +12,10 @@ import java.util.List;
 /**
  * REST controller for Phase 8 — Transformation Rule Generator.
  *
+ * <p>The approve and reject endpoints are powered by the Phase 9
+ * {@link com.semanticapi.service.ApprovalService}, which enforces the confidence
+ * policy and safety re-validation before allowing any status transition.
+ *
  * <h2>Endpoints</h2>
  * <pre>
  * POST /api/transformation-rules/generate
@@ -46,9 +50,13 @@ import java.util.List;
 public class TransformationRuleController {
 
     private final TransformationRuleService ruleService;
+    private final com.semanticapi.service.ApprovalService approvalService;
 
-    public TransformationRuleController(TransformationRuleService ruleService) {
-        this.ruleService = ruleService;
+    public TransformationRuleController(
+            TransformationRuleService ruleService,
+            com.semanticapi.service.ApprovalService approvalService) {
+        this.ruleService     = ruleService;
+        this.approvalService = approvalService;
     }
 
     /**
@@ -117,33 +125,35 @@ public class TransformationRuleController {
     /**
      * POST /api/transformation-rules/{ruleId}/approve
      *
-     * <p>Approve a GENERATED rule. Idempotent — approving an already-APPROVED rule
-     * returns HTTP 200 without error. INVALID rules cannot be approved.
+     * <p>Approve a GENERATED rule via Phase 9 ApprovalService.
+     * Enforces confidence policy and safety re-validation.
+     * Idempotent — approving an already-APPROVED rule returns HTTP 200 without error.
+     * INVALID rules cannot be approved.
      *
      * <p>A REQUIRES_REVIEW candidate produces a GENERATED rule that requires
      * explicit human approval here. An AUTO_APPROVED candidate's rule may be
-     * approved either here or automatically by Phase 9.
+     * approved here or by the batch auto-approve endpoint.
      */
     @PostMapping("/{ruleId}/approve")
     public TransformationRuleResponse approveRule(
             @PathVariable Long ruleId,
             @RequestBody(required = false) ApproveRejectRuleRequest request) {
         String reason = request != null ? request.getReason() : null;
-        return TransformationRuleResponse.from(ruleService.approveRule(ruleId, reason));
+        return TransformationRuleResponse.from(approvalService.approveRule(ruleId, reason));
     }
 
     /**
      * POST /api/transformation-rules/{ruleId}/reject
      *
-     * <p>Reject a GENERATED or APPROVED rule. Idempotent — rejecting an already-
-     * REJECTED rule returns HTTP 200. Rejected rules are stored for auditability
-     * but must not be executed by Phase 10.
+     * <p>Reject a GENERATED or APPROVED rule via Phase 9 ApprovalService.
+     * Idempotent — rejecting an already-REJECTED rule returns HTTP 200.
+     * Rejected rules are stored for auditability but must not be executed by Phase 10.
      */
     @PostMapping("/{ruleId}/reject")
     public TransformationRuleResponse rejectRule(
             @PathVariable Long ruleId,
             @RequestBody(required = false) ApproveRejectRuleRequest request) {
         String reason = request != null ? request.getReason() : null;
-        return TransformationRuleResponse.from(ruleService.rejectRule(ruleId, reason));
+        return TransformationRuleResponse.from(approvalService.rejectRule(ruleId, reason));
     }
 }

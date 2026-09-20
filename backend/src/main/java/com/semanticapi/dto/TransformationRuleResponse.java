@@ -49,6 +49,11 @@ public class TransformationRuleResponse {
     private Instant createdAt;
     private Instant updatedAt;
 
+    // Phase 9 audit
+    private Instant approvedAt;
+    private Instant rejectedAt;
+    private String  approvalNote;
+
     // ── Factory ───────────────────────────────────────────────
 
     public static TransformationRuleResponse from(TransformationRule r) {
@@ -75,6 +80,9 @@ public class TransformationRuleResponse {
         dto.validationErrors    = r.getValidationErrors();
         dto.createdAt           = r.getCreatedAt();
         dto.updatedAt           = r.getUpdatedAt();
+        dto.approvedAt          = r.getApprovedAt();
+        dto.rejectedAt          = r.getRejectedAt();
+        dto.approvalNote        = r.getApprovalNote();
         return dto;
     }
 
@@ -102,4 +110,7 @@ public class TransformationRuleResponse {
     public String  getValidationErrors()   { return validationErrors; }
     public Instant getCreatedAt()          { return createdAt; }
     public Instant getUpdatedAt()          { return updatedAt; }
+    public Instant getApprovedAt()         { return approvedAt; }
+    public Instant getRejectedAt()         { return rejectedAt; }
+    public String  getApprovalNote()       { return approvalNote; }
 }
