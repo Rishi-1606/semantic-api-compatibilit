@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     status: 'UP',
     service: 'gateway',
     version: '1.0.0',
-    phase: 'Phase 1 - Foundation',
+    phase: 'Phase 10 — Runtime Gateway',
     backendUrl: BACKEND_URL,
     timestamp: new Date().toISOString(),
   });

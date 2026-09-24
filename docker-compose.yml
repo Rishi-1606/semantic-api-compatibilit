@@ -67,6 +67,10 @@ services:
       PORT: 3001
       BACKEND_URL: http://backend:8080
       NODE_ENV: production
+      MOCK_API_V1_URL: http://mock-api-v1:8081
+      MOCK_API_V2_URL: http://mock-api-v2:8082
+      RULE_CACHE_TTL_MS: 60000
+      TARGET_TIMEOUT_MS: 10000
     ports:
       - "3001:3001"
     healthcheck:

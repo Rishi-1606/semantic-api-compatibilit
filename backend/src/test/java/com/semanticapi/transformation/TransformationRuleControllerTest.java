@@ -263,7 +263,7 @@ class TransformationRuleControllerTest {
         void getByEndpointPair_valid_returns200() throws Exception {
             TransformationRule rule = ruleEntity(1L, TransformationRule.Operation.RENAME,
                     TransformationRule.RuleStatus.APPROVED);
-            when(ruleService.getRulesByEndpointPair(1L, 2L)).thenReturn(List.of(rule));
+            when(ruleService.getRulesByEndpointPair(1L, 2L, null)).thenReturn(List.of(rule));
 
             mockMvc.perform(get("/api/transformation-rules/endpoint-pair")
                             .param("srcEndpointId", "1")
@@ -276,7 +276,7 @@ class TransformationRuleControllerTest {
         @Test
         @DisplayName("endpoint not found → 404")
         void getByEndpointPair_endpointNotFound_returns404() throws Exception {
-            when(ruleService.getRulesByEndpointPair(99L, 100L))
+            when(ruleService.getRulesByEndpointPair(99L, 100L, null))
                     .thenThrow(new ResourceNotFoundException("Endpoint", 99L));
 
             mockMvc.perform(get("/api/transformation-rules/endpoint-pair")

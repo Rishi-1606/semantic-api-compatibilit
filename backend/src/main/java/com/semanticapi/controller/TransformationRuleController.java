@@ -103,20 +103,23 @@ public class TransformationRuleController {
     /**
      * GET /api/transformation-rules/endpoint-pair
      *
-     * <p>List all rules for a specific (source, target) endpoint pair.
+     * <p>List rules for a specific (source, target) endpoint pair.
      * This is the primary query used by Phase 10 to retrieve runtime rules.
      *
-     * <p>Phase 10 will call this filtered to {@code ruleStatus=APPROVED}.
-     * Future: add an optional {@code ruleStatus} query parameter for filtering.
+     * <p>Phase 10 calls this with {@code ruleStatus=APPROVED} to retrieve only
+     * executable rules without transmitting GENERATED/REJECTED/INVALID records.
+     * Omitting {@code ruleStatus} returns all statuses (backward-compatible).
      *
      * @param srcEndpointId source endpoint ID
      * @param tgtEndpointId target endpoint ID
+     * @param ruleStatus    optional filter (APPROVED, GENERATED, REJECTED, INVALID)
      */
     @GetMapping("/endpoint-pair")
     public List<TransformationRuleResponse> getRulesByEndpointPair(
             @RequestParam Long srcEndpointId,
-            @RequestParam Long tgtEndpointId) {
-        return ruleService.getRulesByEndpointPair(srcEndpointId, tgtEndpointId)
+            @RequestParam Long tgtEndpointId,
+            @RequestParam(required = false) String ruleStatus) {
+        return ruleService.getRulesByEndpointPair(srcEndpointId, tgtEndpointId, ruleStatus)
                 .stream()
                 .map(TransformationRuleResponse::from)
                 .toList();

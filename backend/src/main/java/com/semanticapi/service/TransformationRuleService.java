@@ -244,15 +244,41 @@ public class TransformationRuleService {
 
     /**
      * Rules for a specific (source, target) endpoint pair.
-     * Callers may filter the result list by ruleStatus as needed.
+     * No status filter — returns all statuses.
      */
     @Transactional(readOnly = true)
     public List<TransformationRule> getRulesByEndpointPair(Long srcEndpointId, Long tgtEndpointId) {
+        return getRulesByEndpointPair(srcEndpointId, tgtEndpointId, null);
+    }
+
+    /**
+     * Rules for a specific (source, target) endpoint pair with an optional status filter.
+     *
+     * <p>Phase 10 calls this with {@code ruleStatus = "APPROVED"} to retrieve only
+     * executable rules. Passing {@code null} or blank returns all statuses.
+     *
+     * @param ruleStatus optional filter string (APPROVED, GENERATED, REJECTED, INVALID);
+     *                   {@code null} or blank → no filter
+     */
+    @Transactional(readOnly = true)
+    public List<TransformationRule> getRulesByEndpointPair(
+            Long srcEndpointId, Long tgtEndpointId, String ruleStatus) {
         if (!endpointRepository.existsById(srcEndpointId)) {
             throw new ResourceNotFoundException("Endpoint", srcEndpointId);
         }
         if (!endpointRepository.existsById(tgtEndpointId)) {
             throw new ResourceNotFoundException("Endpoint", tgtEndpointId);
+        }
+        if (ruleStatus != null && !ruleStatus.isBlank()) {
+            TransformationRule.RuleStatus status;
+            try {
+                status = TransformationRule.RuleStatus.valueOf(ruleStatus.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Invalid ruleStatus value: '" + ruleStatus + "'. " +
+                        "Valid values: GENERATED, APPROVED, REJECTED, INVALID");
+            }
+            return ruleRepository.findByEndpointPairAndStatus(srcEndpointId, tgtEndpointId, status);
         }
         return ruleRepository.findByEndpointPair(srcEndpointId, tgtEndpointId);
     }
