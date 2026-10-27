@@ -67,7 +67,9 @@ app:
     allowed-origins: "http://localhost:5173,http://localhost:3000"
   confidence:
     auto-approve-threshold: 0.90
-    human-approval-threshold: 0.70
+    human-approval-threshold: 0.50
+
+
 
 # ── AI / Embedding (Phase 6) ──────────────────────────────────
 # Provider selection and model configuration.
@@ -89,8 +91,9 @@ ai:
     # >= auto-approve-threshold → AUTO_APPROVED
     auto-approve-threshold: 0.90
     # >= review-threshold and < auto-approve → REQUIRES_REVIEW
-    review-threshold: 0.70
+    review-threshold: 0.50
     # < review-threshold → LOW_CONFIDENCE
+
 
 # ── NLP Pipeline (Phase 5) ────────────────────────────────────
 # Generic, domain-agnostic abbreviation expansions.

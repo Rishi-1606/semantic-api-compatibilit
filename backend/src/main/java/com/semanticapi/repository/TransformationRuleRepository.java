@@ -99,4 +99,24 @@ public interface TransformationRuleRepository extends JpaRepository<Transformati
           AND r.ruleStatus <> com.semanticapi.model.TransformationRule.RuleStatus.INVALID
         """)
     long countValidByReportId(@Param("reportId") Long reportId);
+
+    /**
+     * Find any previously APPROVED rule with the same sourcePath, targetPath,
+     * and operation from a different report. Used by generateRules() to
+     * auto-approve re-generated rules that were already human-approved before.
+     */
+    @Query("""
+        SELECT r FROM TransformationRule r
+        WHERE r.sourcePath  = :sourcePath
+          AND r.targetPath  = :targetPath
+          AND r.operation   = :operation
+          AND r.ruleStatus  = com.semanticapi.model.TransformationRule.RuleStatus.APPROVED
+          AND r.report.id  <> :currentReportId
+        ORDER BY r.approvedAt DESC
+        """)
+    List<TransformationRule> findPreviouslyApproved(
+            @Param("sourcePath")      String sourcePath,
+            @Param("targetPath")      String targetPath,
+            @Param("operation")       TransformationRule.Operation operation,
+            @Param("currentReportId") Long currentReportId);
 }

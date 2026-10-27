@@ -42,6 +42,7 @@ services:
       AI_API_KEY: ${AI_API_KEY:-}
       AI_API_BASE_URL: ${AI_API_BASE_URL:-https://api.openai.com/v1}
       SPRING_PROFILES_ACTIVE: docker
+      AI_EMBEDDING_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     ports:
       - "8080:8080"
     healthcheck:

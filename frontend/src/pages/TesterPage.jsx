@@ -47,10 +47,18 @@ export default function TesterPage() {
             rules.push(...ruleList);
           } catch { /* no rules */ }
         }));
-        // Deduplicate by id
-        const seen = new Set();
-        const unique = rules.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; });
-        setAllRules(unique);
+        // Deduplicate: keep only APPROVED rules, one per unique sourcePath+targetPath+operation
+        // (highest confidence wins when there are duplicates across multiple reports)
+        const approvedOnly = rules.filter(r => r.ruleStatus === 'APPROVED');
+        const bestByKey = new Map();
+        approvedOnly.forEach(r => {
+          const key = `${r.sourcePath}|${r.targetPath}|${r.operation}`;
+          const existing = bestByKey.get(key);
+          if (!existing || r.confidence > existing.confidence) {
+            bestByKey.set(key, r);
+          }
+        });
+        setAllRules([...bestByKey.values()]);
       } catch (err) {
         setError(err.message);
       } finally {

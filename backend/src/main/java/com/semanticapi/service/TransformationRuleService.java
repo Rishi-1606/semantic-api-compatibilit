@@ -141,6 +141,7 @@ public class TransformationRuleService {
         int skippedNoOp          = 0;
         int rulesGenerated       = 0;
         int rulesInvalid         = 0;
+        int rulesAutoApproved    = 0;
 
         List<TransformationRule> savedRules = new ArrayList<>();
 
@@ -194,10 +195,25 @@ public class TransformationRuleService {
                 rulesInvalid++;
                 log.warn("  candidate {} produced INVALID rule: {}", candidate.getId(), errors);
             } else {
-                rule.setRuleStatus(TransformationRule.RuleStatus.GENERATED);
-                rulesGenerated++;
-                log.debug("  candidate {} → {} rule: {} → {}",
-                        candidate.getId(), operation, srcPath, tgtPath);
+                // ── Auto-approve if identical rule was previously approved ──
+                List<TransformationRule> prior = ruleRepository.findPreviouslyApproved(
+                        srcPath, tgtPath, operation, reportId);
+                if (!prior.isEmpty()) {
+                    TransformationRule prev = prior.get(0);
+                    rule.setRuleStatus(TransformationRule.RuleStatus.APPROVED);
+                    rule.setApprovedAt(java.time.Instant.now());
+                    rule.setApprovalNote(String.format(
+                            "Auto-approved: matches previously approved rule #%d (report #%d)",
+                            prev.getId(), prev.getReport().getId()));
+                    rulesAutoApproved++;
+                    log.info("  candidate {} → auto-approved (matches rule #{} from report #{})",
+                            candidate.getId(), prev.getId(), prev.getReport().getId());
+                } else {
+                    rule.setRuleStatus(TransformationRule.RuleStatus.GENERATED);
+                    rulesGenerated++;
+                    log.debug("  candidate {} → {} rule: {} → {}",
+                            candidate.getId(), operation, srcPath, tgtPath);
+                }
             }
 
             savedRules.add(rule);
@@ -206,9 +222,9 @@ public class TransformationRuleService {
         // ── Persist all at once ─────────────────────────────────
         List<TransformationRule> persistedRules = ruleRepository.saveAll(savedRules);
 
-        log.info("Phase 8: report {} → {} rules generated, {} invalid, " +
+        log.info("Phase 8: report {} → {} rules generated, {} auto-approved, {} invalid, " +
                 "{} skipped (low-conf: {}, rejected: {}, no-op: {})",
-                reportId, rulesGenerated, rulesInvalid,
+                reportId, rulesGenerated, rulesAutoApproved, rulesInvalid,
                 skippedLowConfidence + skippedRejected + skippedNoOp,
                 skippedLowConfidence, skippedRejected, skippedNoOp);
 
